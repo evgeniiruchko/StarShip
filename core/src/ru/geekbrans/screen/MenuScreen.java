@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import ru.geekbrans.base.BaseScreen;
 
 public class MenuScreen extends BaseScreen {
+    final private float V_LEN = 1.0f;
     private Texture ship;
     private Texture shipLeft;
     private Texture shipRight;
@@ -36,10 +37,10 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void render(float delta) {
         super.render(delta);
-        pos.add(speed);
         ScreenUtils.clear(1, 0, 0, 1);
         batch.begin();
         batch.draw(background, 0, 0);
+
         if (speed.x == 0) {
             batch.draw(ship, pos.x, pos.y, 50, 78);
         } else if (speed.x > 0) {
@@ -47,12 +48,14 @@ public class MenuScreen extends BaseScreen {
         } else {
             batch.draw(shipLeft, pos.x, pos.y, 50, 78);
         }
-        pos.x += speed.x;
-        pos.y += speed.y;
-        if (Math.round(pos.x) == endPos.x || Math.round(pos.y) == endPos.y) {
-            speed.set(0, 0);
-        }
         batch.end();
+        tempVector.set(endPos);
+        if (tempVector.sub(pos).len() <= speed.len()) {
+            pos.set(endPos);
+            speed.set(0, 0);
+        } else {
+            pos.add(speed);
+        }
     }
 
     @Override
@@ -66,10 +69,7 @@ public class MenuScreen extends BaseScreen {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         endPos.set(screenX, Gdx.graphics.getHeight() - screenY);
-        tempVector.set(screenX, Gdx.graphics.getHeight() - screenY);
-        tempVector.sub(pos);
-        speed.x = (tempVector.x / tempVector.len());
-        speed.y = (tempVector.y / tempVector.len());
+        speed.set(endPos.cpy().sub(pos)).setLength(V_LEN);
         return false;
     }
 }
