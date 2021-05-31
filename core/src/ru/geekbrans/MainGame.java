@@ -1,32 +1,14 @@
 package ru.geekbrans;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.Game;
 
-public class MainGame extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
-	Texture background;
-	
+import ru.geekbrans.screen.MenuScreen;
+
+public class MainGame extends Game {
+
 	@Override
 	public void create () {
-		batch = new SpriteBatch();
-		background = new Texture("space.jpg");
-	}
+		setScreen(new MenuScreen());
 
-	@Override
-	public void render () {
-		ScreenUtils.clear(1, 0, 0, 1);
-		batch.begin();
-		batch.draw(background, 0, 0);
-		batch.end();
-	}
-	
-	@Override
-	public void dispose () {
-		batch.dispose();
-		img.dispose();
 	}
 }
