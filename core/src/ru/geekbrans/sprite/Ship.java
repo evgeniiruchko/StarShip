@@ -48,5 +48,11 @@ public class Ship extends Sprite {
             pos.add(speed);
         }
     }
-
+//        if (speed.x == 0) {
+//            batch.draw(ship, pos.x, pos.y, 0.5f, 0.8f);
+//        } else if (speed.x > 0) {
+//            batch.draw(shipRight, pos.x, pos.y, 50, 78);
+//        } else {
+//            batch.draw(shipLeft, pos.x, pos.y, 50, 78);
+//        }
 }
