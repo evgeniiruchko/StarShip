@@ -17,7 +17,6 @@ import ru.geekbrans.math.Rect;
 
 public class BaseScreen implements Screen, InputProcessor {
     protected SpriteBatch batch;
-    private Vector2 touch;
 
     private Rect screenBounds;
     private Rect worldBounds;
@@ -26,17 +25,17 @@ public class BaseScreen implements Screen, InputProcessor {
     private Matrix4 worldToGl;
     private Matrix3 screenToWorld;
 
+    private Vector2 touch;
 
     @Override
     public void show() {
         batch = new SpriteBatch();
         screenBounds = new Rect();
         worldBounds = new Rect();
+        glBounds = new Rect(0, 0, 1f, 1f);
         worldToGl = new Matrix4();
         screenToWorld = new Matrix3();
         touch = new Vector2();
-        glBounds = new Rect(0, 0, 1f, 1f);
-       // batch.getProjectionMatrix().idt();
         Gdx.input.setInputProcessor(this);
     }
 
@@ -47,6 +46,7 @@ public class BaseScreen implements Screen, InputProcessor {
 
     @Override
     public void resize(int width, int height) {
+        System.out.println("resize width = " + width + " height = " + height);
         screenBounds.setSize(width, height);
         screenBounds.setLeft(0);
         screenBounds.setBottom(0);
@@ -61,17 +61,14 @@ public class BaseScreen implements Screen, InputProcessor {
     }
 
     public void resize(Rect worldBounds) {
-
     }
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
@@ -101,7 +98,7 @@ public class BaseScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        touch.set(screenX, screenBounds.getHalfHeight() - screenY).mul(screenToWorld);
+        touch.set(screenX, screenBounds.getHeight() - screenY).mul(screenToWorld);
         touchDown(touch, pointer, button);
         return false;
     }
@@ -112,7 +109,7 @@ public class BaseScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        touch.set(screenX, screenBounds.getHalfHeight() - screenY).mul(screenToWorld);
+        touch.set(screenX, screenBounds.getHeight() - screenY).mul(screenToWorld);
         touchUp(touch, pointer, button);
         return false;
     }
@@ -123,7 +120,7 @@ public class BaseScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        touch.set(screenX, screenBounds.getHalfHeight() - screenY).mul(screenToWorld);
+        touch.set(screenX, screenBounds.getHeight() - screenY).mul(screenToWorld);
         touchDragged(touch, pointer);
         return false;
     }

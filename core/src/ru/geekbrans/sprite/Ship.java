@@ -13,50 +13,40 @@ import ru.geekbrans.math.Rect;
 
 public class Ship extends Sprite {
 
-    final private float V_LEN = 1.0f;
-    private Texture texture;
-    private Vector2 position;
+    private static final float V_LEN = 0.006f;
     private Vector2 speed;
-    private Vector2 tempVector = new Vector2();
-    private Vector2 touch = new Vector2(0, 0);
+    private Vector2 tempVector;
+    private Vector2 touch;
 
     public Ship(Texture texture) {
         super(new TextureRegion(texture));
-        this.texture = texture;
-        this.position = new Vector2();
-        this.speed = new Vector2(0, 0);
+        touch = new Vector2();
+        this.speed = new Vector2();
+        this.tempVector = new Vector2();
     }
 
     @Override
     public void resize(Rect worldBounds) {
         super.resize(worldBounds);
-        setHeightProportion(0.1f);
-        this.pos.set(worldBounds.pos);
+        setHeightProportion(0.15f);
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        //touch.set(touch.x, Gdx.graphics.getHeight() - touch.y);
-        //speed.set(touch.cpy().sub(pos)).setLength(V_LEN);
         this.touch.set(touch);
-        speed.set(touch.cpy().sub(this.pos)).setLength(V_LEN);
+        speed.set(touch.cpy().sub(pos)).setLength(V_LEN);
         return false;
     }
 
     @Override
-    public void draw(SpriteBatch spriteBatch) {
-        tempVector.set(this.touch);
-        if (tempVector.sub(pos).len() <= speed.len()) {
+    public void update(float delta) {
+        tempVector.set(touch);
+        if (tempVector.sub(pos).len() <= V_LEN) {
             pos.set(touch);
             speed.set(0, 0);
         } else {
             pos.add(speed);
         }
-        spriteBatch.draw(texture, pos.x, pos.y);
-        //super.draw(spriteBatch);
     }
-    //    @Override
-//    public void draw(SpriteBatch spriteBatch) {
-//        spriteBatch.draw(this.texture, position.x, position.y);
-//    }
+
 }

@@ -47,6 +47,7 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void render(float delta) {
         super.render(delta);
+        ship.update(delta);
         ScreenUtils.clear(1, 0, 0, 1);
         batch.begin();
         background.draw(batch);
@@ -66,15 +67,12 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void dispose() {
         super.dispose();
-//        ship.dispose();
-//        shipLeft.dispose();
-//        shipRight.dispose();
         backgroundTexture.dispose();
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        //pos.set(touch);
+        ship.touchDown(touch, pointer, button);
         return false;
     }
 }
