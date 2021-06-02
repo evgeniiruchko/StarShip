@@ -35,10 +35,10 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void show() {
         super.show();
-        backgroundTexture = new Texture("space.jpg");
+        backgroundTexture = new Texture("textures/space.jpg");
         background = new Background(backgroundTexture);
-        ship = new Ship(new Texture("ship.png"));
-        atlas = new TextureAtlas("menuAtlas.tpack");
+        ship = new Ship(new Texture("textures/ship.png"));
+        atlas = new TextureAtlas("textures/menuAtlas.tpack");
         stars = new Star[STARS_COUNT];
         for (int i = 0; i < STARS_COUNT; i++) {
             stars[i] = new Star(atlas);
