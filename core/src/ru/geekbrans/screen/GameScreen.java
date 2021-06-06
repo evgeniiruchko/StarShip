@@ -4,21 +4,28 @@ package ru.geekbrans.screen;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import ru.geekbrans.base.BaseScreen;
 import ru.geekbrans.math.Rect;
+import ru.geekbrans.pool.BulletPool;
 import ru.geekbrans.sprite.Background;
+import ru.geekbrans.sprite.Ship;
 import ru.geekbrans.sprite.Star;
 
 public class GameScreen extends BaseScreen {
     private static final int STAR_COUNT = 64;
 
+    private Ship heroShip;
     private Texture bg;
     private TextureAtlas atlas;
 
     private Background background;
     private Star[] stars;
+
+    private BulletPool bulletPool;
 
     @Override
     public void show() {
@@ -26,6 +33,8 @@ public class GameScreen extends BaseScreen {
         bg = new Texture("textures/space.jpg");
         background = new Background(bg);
         atlas = new TextureAtlas("textures/mainAtlas.tpack");
+        bulletPool = new BulletPool();
+        heroShip = new Ship(atlas, bulletPool);
         stars = new Star[STAR_COUNT];
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(atlas);
@@ -35,7 +44,20 @@ public class GameScreen extends BaseScreen {
     @Override
     public void render(float delta) {
         update(delta);
+        freeAllDestroyed();
         draw();
+    }
+
+    @Override
+    public boolean touchDown(Vector2 touch, int pointer, int button) {
+        heroShip.touchDown(touch, pointer, button);
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(Vector2 touch, int pointer, int button) {
+        heroShip.touchUp(touch, pointer, button);
+        return false;
     }
 
     @Override
@@ -45,6 +67,7 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.resize(worldBounds);
         }
+        heroShip.resize(worldBounds);
     }
 
     @Override
@@ -52,12 +75,19 @@ public class GameScreen extends BaseScreen {
         super.dispose();
         bg.dispose();
         atlas.dispose();
+        bulletPool.dispose();
     }
 
     private void update(float delta) {
         for (Star star : stars) {
             star.update(delta);
         }
+        bulletPool.updateActiveSprites(delta);
+        heroShip.update(delta);
+    }
+
+    private void freeAllDestroyed() {
+        bulletPool.freeAllDestroyed();
     }
 
     private void draw() {
@@ -67,6 +97,25 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.draw(batch);
         }
+        heroShip.draw(batch);
+        bulletPool.drawActiveSprites(batch);
         batch.end();
     }
+
+    @Override
+
+    public boolean keyUp(int keycode) {
+        heroShip.keyUp(keycode);
+        return false;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        heroShip.keyDown(keycode);
+        return false;
+    }
+
+
+
+
 }

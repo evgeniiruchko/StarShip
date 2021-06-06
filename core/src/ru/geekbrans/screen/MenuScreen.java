@@ -20,7 +20,6 @@ import ru.geekbrans.sprite.Star;
 public class MenuScreen extends BaseScreen {
     private static final int STARS_COUNT = 256;
     private final Game game;
-    private Ship ship;
     private Texture backgroundTexture;
     private Background background;
     private TextureAtlas atlas;
@@ -37,7 +36,6 @@ public class MenuScreen extends BaseScreen {
         super.show();
         backgroundTexture = new Texture("textures/space.jpg");
         background = new Background(backgroundTexture);
-        ship = new Ship(new Texture("textures/ship.png"));
         atlas = new TextureAtlas("textures/menuAtlas.tpack");
         stars = new Star[STARS_COUNT];
         for (int i = 0; i < STARS_COUNT; i++) {
@@ -51,7 +49,6 @@ public class MenuScreen extends BaseScreen {
     public void resize(Rect worldBounds) {
         super.resize(worldBounds);
         background.resize(worldBounds);
-        ship.resize(worldBounds);
         for (Star star : stars) {
             star.resize(worldBounds);
         }
@@ -75,7 +72,6 @@ public class MenuScreen extends BaseScreen {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        ship.touchDown(touch, pointer, button);
         exitButton.touchDown(touch, pointer, button);
         playButton.touchDown(touch, pointer, button);
         return false;
@@ -89,7 +85,6 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void update (float delta) {
-        ship.update(delta);
         for (Star star : stars) {
             star.update(delta);
         }
@@ -99,7 +94,6 @@ public class MenuScreen extends BaseScreen {
         ScreenUtils.clear(1, 0, 0, 1);
         batch.begin();
         background.draw(batch);
-        ship.draw(batch);
         for (Star star : stars) {
             star.draw(batch);
         }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrans.math.Rect;
+import ru.geekbrans.utils.Regions;
 
 public class Sprite extends Rect {
 
@@ -14,24 +15,40 @@ public class Sprite extends Rect {
     protected float scale = 1;
     protected TextureRegion[] regions;
     protected int frame;
+    protected boolean destroyed;
 
-    public Sprite (TextureRegion texture) {
-        regions = new TextureRegion[1];
-        regions[0] = texture;
+    public Sprite() {
     }
 
+    public Sprite(TextureRegion region) {
+        regions = new TextureRegion[1];
+        regions[0] = region;
+    }
+
+    public Sprite(TextureRegion region, int rows, int cols, int frames) {
+        regions = Regions.split(region, rows, cols, frames);
+    }
+
+    /**
+     * Установка размера изображения по высоте
+     * @param height высота
+     */
     public void setHeightProportion(float height) {
         setHeight(height);
         float aspect = regions[frame].getRegionWidth() / (float) regions[frame].getRegionHeight();
         setWidth(height * aspect);
     }
 
-    public void update (float delta) {
+    /**
+     * Логика спрайта
+     * @param delta отрезок времени
+     */
+    public void update(float delta) {
 
     }
 
-    public void draw (SpriteBatch spriteBatch) {
-        spriteBatch.draw(
+    public void draw(SpriteBatch batch) {
+        batch.draw(
                 regions[frame],
                 getLeft(), getBottom(),
                 halfWidth, halfHeight,
@@ -41,7 +58,7 @@ public class Sprite extends Rect {
         );
     }
 
-    public void resize (Rect worldBounds) {
+    public void resize(Rect worldBounds) {
 
     }
 
@@ -57,15 +74,27 @@ public class Sprite extends Rect {
         return angle;
     }
 
-    public float getScale() {
-        return scale;
-    }
-
     public void setAngle(float angle) {
         this.angle = angle;
     }
 
+    public float getScale() {
+        return scale;
+    }
+
     public void setScale(float scale) {
         this.scale = scale;
+    }
+
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+
+    public void destroy() {
+        destroyed = true;
+    }
+
+    public void flushDestroy() {
+        destroyed = false;
     }
 }
