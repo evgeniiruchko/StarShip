@@ -5,6 +5,7 @@ package ru.geekbrans.base;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix3;
@@ -27,6 +28,8 @@ public class BaseScreen implements Screen, InputProcessor {
 
     private Vector2 touch;
 
+    protected Music backgroundMusic;
+
     @Override
     public void show() {
         batch = new SpriteBatch();
@@ -36,6 +39,9 @@ public class BaseScreen implements Screen, InputProcessor {
         worldToGl = new Matrix4();
         screenToWorld = new Matrix3();
         touch = new Vector2();
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
+        backgroundMusic.setLooping(true);
+        backgroundMusic.play();
         Gdx.input.setInputProcessor(this);
     }
 
@@ -79,6 +85,7 @@ public class BaseScreen implements Screen, InputProcessor {
     @Override
     public void dispose() {
         batch.dispose();
+        backgroundMusic.dispose();
     }
 
     @Override

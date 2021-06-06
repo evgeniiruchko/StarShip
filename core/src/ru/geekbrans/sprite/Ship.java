@@ -2,8 +2,11 @@
 //}
 package ru.geekbrans.sprite;
 
+import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -19,6 +22,7 @@ public class Ship extends Sprite {
     private static final float PADDING = 0.03f;
     private static final float HEIGHT = 0.15f;
     private static final int INVALID_POINTER = -1;
+    private static final float SHOOT_INTERVAL = 0.5f;
 
     private Vector2 v0 = new Vector2(0.5f, 0);
     private Vector2 speed = new Vector2();
@@ -36,6 +40,9 @@ public class Ship extends Sprite {
     private Vector2 bulletSpeed;
     private Vector2 bulletPosition;
 
+    private Sound piu;
+
+    private float counterTime = 0f;
 
     public Ship(TextureAtlas atlas, BulletPool bulletPool) {
         super(atlas.findRegion("main_ship"), 1, 2 ,2);
@@ -43,6 +50,7 @@ public class Ship extends Sprite {
         this.bulletRegion = atlas.findRegion("bulletMainShip");
         this.bulletSpeed = new Vector2(0, 0.5f);
         this.bulletPosition = new Vector2();
+        this.piu = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
     }
 
     @Override
@@ -101,6 +109,11 @@ public class Ship extends Sprite {
             setLeft(worldBounds.getLeft());
             stop();
         }
+        counterTime += delta;
+        if (counterTime >= SHOOT_INTERVAL) {
+            shoot();
+            counterTime = 0f;
+        }
     }
 
     public boolean keyDown(int keycode) {
@@ -115,10 +128,10 @@ public class Ship extends Sprite {
                 isPressedRight = true;
                 moveRight();
                 break;
-            case Input.Keys.UP:
-            case Input.Keys.SPACE:
-                shoot();
-                break;
+//            case Input.Keys.UP:
+//            case Input.Keys.SPACE:
+//                shoot();
+//                break;
         }
         return false;
     }
@@ -163,5 +176,8 @@ public class Ship extends Sprite {
         Bullet bullet = bulletPool.obtain();
         bulletPosition.set(pos.x, pos.y + getHalfHeight());
         bullet.set(this, bulletRegion, bulletPosition, bulletSpeed, worldBounds, 1, 0.01f);
+        piu.play();
     }
+
+
 }
