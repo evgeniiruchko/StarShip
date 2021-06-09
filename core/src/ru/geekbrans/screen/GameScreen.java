@@ -2,23 +2,28 @@
 //}
 package ru.geekbrans.screen;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import ru.geekbrans.base.BaseScreen;
 import ru.geekbrans.math.Rect;
 import ru.geekbrans.pool.BulletPool;
+import ru.geekbrans.pool.EnemyPool;
 import ru.geekbrans.sprite.Background;
-import ru.geekbrans.sprite.Ship;
+import ru.geekbrans.sprite.MainShip;
 import ru.geekbrans.sprite.Star;
+import ru.geekbrans.utils.EnemyEmitter;
 
 public class GameScreen extends BaseScreen {
     private static final int STAR_COUNT = 64;
 
-    private Ship heroShip;
+    private MainShip mainShip;
+    private EnemyPool enemyPool;
     private Texture bg;
     private TextureAtlas atlas;
 
@@ -27,18 +32,31 @@ public class GameScreen extends BaseScreen {
 
     private BulletPool bulletPool;
 
+    private Sound laserSound;
+    private Sound bulletSound;
+//    private Music music;
+
+    private EnemyEmitter enemyEmitter;
+
     @Override
     public void show() {
         super.show();
         bg = new Texture("textures/space.jpg");
         background = new Background(bg);
         atlas = new TextureAtlas("textures/mainAtlas.tpack");
-        bulletPool = new BulletPool();
-        heroShip = new Ship(atlas, bulletPool);
         stars = new Star[STAR_COUNT];
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(atlas);
         }
+        bulletPool = new BulletPool();
+        bulletSound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.wav"));
+        enemyPool = new EnemyPool(worldBounds, bulletPool, bulletSound);
+        laserSound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
+        mainShip = new MainShip(atlas, bulletPool, laserSound);
+        enemyEmitter = new EnemyEmitter(worldBounds, enemyPool, atlas);
+//        music = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
+//        music.setLooping(true);
+//        music.play();
     }
 
     @Override
@@ -50,13 +68,13 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        heroShip.touchDown(touch, pointer, button);
+        mainShip.touchDown(touch, pointer, button);
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
-        heroShip.touchUp(touch, pointer, button);
+        mainShip.touchUp(touch, pointer, button);
         return false;
     }
 
@@ -67,7 +85,7 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.resize(worldBounds);
         }
-        heroShip.resize(worldBounds);
+        mainShip.resize(worldBounds);
     }
 
     @Override
@@ -76,18 +94,25 @@ public class GameScreen extends BaseScreen {
         bg.dispose();
         atlas.dispose();
         bulletPool.dispose();
+        enemyPool.dispose();
+        bulletSound.dispose();
+        laserSound.dispose();
+//        music.dispose();
     }
 
     private void update(float delta) {
         for (Star star : stars) {
             star.update(delta);
         }
+        mainShip.update(delta);
         bulletPool.updateActiveSprites(delta);
-        heroShip.update(delta);
+        enemyPool.updateActiveSprites(delta);
+        enemyEmitter.generate(delta);
     }
 
     private void freeAllDestroyed() {
         bulletPool.freeAllDestroyed();
+        enemyPool.freeAllDestroyed();
     }
 
     private void draw() {
@@ -97,25 +122,22 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.draw(batch);
         }
-        heroShip.draw(batch);
+        mainShip.draw(batch);
         bulletPool.drawActiveSprites(batch);
+        enemyPool.drawActiveSprites(batch);
         batch.end();
     }
 
     @Override
 
     public boolean keyUp(int keycode) {
-        heroShip.keyUp(keycode);
+        mainShip.keyUp(keycode);
         return false;
     }
 
     @Override
     public boolean keyDown(int keycode) {
-        heroShip.keyDown(keycode);
+        mainShip.keyDown(keycode);
         return false;
     }
-
-
-
-
 }
