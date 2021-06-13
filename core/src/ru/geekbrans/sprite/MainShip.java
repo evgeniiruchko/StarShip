@@ -17,13 +17,14 @@ import ru.geekbrans.base.Ship;
 import ru.geekbrans.base.Sprite;
 import ru.geekbrans.math.Rect;
 import ru.geekbrans.pool.BulletPool;
+import ru.geekbrans.pool.ExplosionPool;
 
 public class MainShip extends Ship {
 
     private static final float PADDING = 0.03f;
     private static final float HEIGHT = 0.15f;
     private static final int INVALID_POINTER = -1;
-    private static final float SHOOT_INTERVAL = 0.5f;
+    private static final float RELOAD_INTERVAL = 0.5f;
 
     private boolean isPressedLeft;
     private boolean isPressedRight;
@@ -31,19 +32,9 @@ public class MainShip extends Ship {
     private int leftPointer = INVALID_POINTER;
     private int rightPointer = INVALID_POINTER;
 
-//    private Rect worldBounds;
-//
-//    private BulletPool bulletPool;
-//    private TextureRegion bulletRegion;
-//    private Vector2 bulletSpeed;
-//    private Vector2 bulletPosition;
-//
-//    private Sound piu;
-//
-//    private float counterTime = 0f;
-
-    public MainShip(TextureAtlas atlas, BulletPool bulletPool, Sound bulletSound) {
+    public MainShip(TextureAtlas atlas, ExplosionPool explosionPool, BulletPool bulletPool, Sound bulletSound) {
         super(atlas.findRegion("main_ship"), 1, 2, 2);
+        this.explosionPool = explosionPool;
         this.bulletPool = bulletPool;
         this.bulletRegion = atlas.findRegion("bulletMainShip");
         this.bulletSound = bulletSound;
@@ -51,7 +42,7 @@ public class MainShip extends Ship {
         this.bulletPos = new Vector2();
         v0 = new Vector2(0.5f, 0);
         speed = new Vector2();
-        reloadInterval = SHOOT_INTERVAL;
+        reloadInterval = RELOAD_INTERVAL;
         bulletHeight = 0.01f;
         damage = 1;
         hp = 100;
@@ -62,6 +53,15 @@ public class MainShip extends Ship {
         this.worldBounds = worldBounds;
         setHeightProportion(HEIGHT);
         setBottom(worldBounds.getBottom() + PADDING);
+    }
+
+    public boolean isBulletCollision(Rect bullet) {
+        return !(
+                bullet.getRight() < getLeft()
+                        || bullet.getLeft() > getRight()
+                        || bullet.getBottom() > pos.y
+                        || bullet.getTop() < getBottom()
+        );
     }
 
     @Override
