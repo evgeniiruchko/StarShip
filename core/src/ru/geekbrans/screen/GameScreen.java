@@ -22,6 +22,7 @@ import ru.geekbrans.sprite.Bullet;
 import ru.geekbrans.sprite.EnemyShip;
 import ru.geekbrans.sprite.GameOver;
 import ru.geekbrans.sprite.MainShip;
+import ru.geekbrans.sprite.NewGameButton;
 import ru.geekbrans.sprite.Star;
 import ru.geekbrans.utils.EnemyEmitter;
 
@@ -36,6 +37,7 @@ public class GameScreen extends BaseScreen {
     private Background background;
     private Star[] stars;
     private GameOver gameOver;
+    private NewGameButton newGame;
 
     private BulletPool bulletPool;
     private MainShip mainShip;
@@ -61,6 +63,7 @@ public class GameScreen extends BaseScreen {
             stars[i] = new Star(atlas);
         }
         gameOver = new GameOver(atlas);
+        newGame = new NewGameButton(atlas, this);
         bulletPool = new BulletPool();
         explosionSound = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion.wav"));
         explosionPool = new ExplosionPool(atlas, explosionSound);
@@ -89,6 +92,7 @@ public class GameScreen extends BaseScreen {
         }
         mainShip.resize(worldBounds);
         gameOver.resize(worldBounds);
+        newGame.resize(worldBounds);
     }
 
     @Override
@@ -124,6 +128,8 @@ public class GameScreen extends BaseScreen {
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         if (state == State.PLAYING) {
             mainShip.touchDown(touch, pointer, button);
+        } else if (state == State.GAME_OVER) {
+            newGame.touchDown(touch, pointer, button);
         }
         return false;
     }
@@ -132,6 +138,8 @@ public class GameScreen extends BaseScreen {
     public boolean touchUp(Vector2 touch, int pointer, int button) {
         if (state == State.PLAYING) {
             mainShip.touchUp(touch, pointer, button);
+        } else if (state == State.GAME_OVER) {
+            newGame.touchUp(touch, pointer, button);
         }
         return false;
     }
@@ -208,25 +216,16 @@ public class GameScreen extends BaseScreen {
             enemyPool.drawActiveSprites(batch);
         } else {
             gameOver.draw(batch);
+            newGame.draw(batch);
         }
         explosionPool.drawActiveSprites(batch);
         batch.end();
     }
-
-//    private void collision(EnemyShip enemyShip) {
-//        float minDist = enemyShip.getHalfWidth() + mainShip.getHalfWidth();
-//        List<Bullet> bulletList = bulletPool.getActiveObjects();
-//
-//        if(enemyShip.pos.dst2(mainShip.pos) < Math.pow(minDist, 2)) {
-//            enemyShip.destroy();
-//        }
-//
-//        for(Bullet bullet: bulletList) {
-//            if (bullet.getOwner() == mainShip && enemyShip.pos.dst2(bullet.pos) < Math.pow(minDist, 2)) {
-//                enemyShip.destroy();
-//                bullet.destroy();
-//            }
-//        }
-//    }
-
+        public void newGame() {
+            state = State.PLAYING;
+            mainShip.newGame();
+            bulletPool.freeAllActiveObjects();
+            explosionPool.freeAllActiveObjects();
+            enemyPool.freeAllActiveObjects();
+        }
 }
