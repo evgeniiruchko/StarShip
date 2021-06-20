@@ -85,4 +85,12 @@ public class Ship extends Sprite {
         Explosion explosion = explosionPool.obtain();
         explosion.set(this.pos, getHeight());
     }
+
+    public int getHp() {
+        return hp;
+    }
+
+    public Vector2 getV() {
+        return speed;
+    }
 }
